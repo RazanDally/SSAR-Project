@@ -45,8 +45,8 @@ class WhileParser(object):
             return self.postprocess(Tree(t.subtrees[0].root, t.subtrees[1::2]))
         elif t.root == 'num':
             return Tree(t.root, [Tree(int(t.subtrees[0].root))])  # parse ints
-        elif t.root == '??':
-            return Tree(t.root, [Tree('??')])
+        elif t.root == 'hole':
+            return Tree(t.root, [Tree(t.subtrees[0].root)])
 
         return Tree(t.root, [self.postprocess(s) for s in t.subtrees])
     
