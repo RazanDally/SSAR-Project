@@ -88,12 +88,16 @@ def verify(P, ast, Q, linv=None):
 
 if __name__ == '__main__':
     # # example program
-    pvars = ['a', 'b', 'i', 'n']
-    program = "a := b ; while i < n do ( a := a + 1 ; b := b + 1 )"
+    # pvars = ['a', 'b', 'i', 'n']
+    # program = "a := b ; while i < n do ( a := a + 1 ; b := b + 1 )"
+    # P = lambda _: True
+    # Q = lambda d: d['a'] == d['b']
+    # linv = lambda d: d['a'] == d['b']
+    pvars = ['y', 'x', 'c']
+    program = "y := 1 - ?? ; if y = 0 then y := y - 1 else skip"
     P = lambda _: True
-    Q = lambda d: d['a'] == d['b']
-    linv = lambda d: d['a'] == d['b']
-
+    Q = lambda d: d['y'] == -1
+    linv = lambda _: True
     #
     # Following are other programs that you might want to try
     #
