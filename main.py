@@ -1,5 +1,6 @@
 import commandlines
 import time
+from src.while_lang.syntax import WhileParser
 
 
 
@@ -35,6 +36,9 @@ if __name__ == "__main__":
                     print("Invalid Synthesis Mode, Please run: python main.py --help")
             print("Please Provide a Program in While_lang:")
             program = input()
+            ast = WhileParser()(program)
+            if not ast:
+                print(">> Invalid program.")
             # print("Please Provide a pre-condition:")
             # pre = input()
             # print("Please Provide a post-condition:")
