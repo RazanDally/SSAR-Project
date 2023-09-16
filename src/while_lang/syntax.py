@@ -1,3 +1,5 @@
+import sys
+sys.path.append('lib')
 
 from adt.tree import Tree
 from parsing.earley.earley import Grammar, Parser, ParseTrees
