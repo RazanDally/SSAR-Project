@@ -3,6 +3,27 @@ import time
 from src.while_lang.syntax import WhileParser
 
 
+def create_conditions(examples_before, examples_after, pvars):
+    P = []
+    Q = []
+
+    for example_in, example_out in zip(examples_before, examples_after):
+        p = []
+        q = []
+
+        for var, value in zip(pvars, example_in):
+            if value != '_':
+                p.append(f"d['{var}'] == {value}")
+
+        for var, value in zip(pvars, example_out):
+            if value != '_':
+                q.append(f"d['{var}'] == {value}")
+
+        P.append(p)
+        Q.append(q)
+
+    return P, Q
+
 
 if __name__ == "__main__":
     args = commandlines.parse_cmd_args()
@@ -19,7 +40,7 @@ if __name__ == "__main__":
     mode_automatic = args.A
     while True:
         if mode_interactive:
-            #TODO: Interactive mode
+            # TODO: Interactive mode
             if not args.PBE and not args.ASSERT and not args.PBE_ASSERT:
                 print("Please Choose Synthesis Mode:")
                 print("1. Synthesis with PBE")
@@ -53,22 +74,41 @@ if __name__ == "__main__":
             print("Please Provide the number of Examples:")
             num_examples = input()
             print("The format of the example should be:\n"
-                  "input: "
-                  "(x1,1), (x2,2), ... , (xn,3) \n"
-                  "output: (x2,2), (x2,2), ... , (xn,3) \n"
-                  "where x1, x2, ..., xn are the variables in the program.\n"
-                  "and 1, 2, 3, 4 are the values of the variables.")
-            examples = []
+                  "input: (x1,y1...), (x2,y2...), ... , (xn,yn...) \n"
+                  "output: (x1',y1'...), (x2',y2'...), ... , (xn',yn'...) \n"
+                  "where (xi,yi...) are the input values of the variables in the program for example i.\n"
+                  "and (xi',yi'...) are the output values of the variables for example i.\n"
+                  "if there is no input/output for a variable, please enter '_' instead.")
+            inputs = []
+            outputs = []
             for i in range(int(num_examples)):
-                print(f"Enter example #{i}:")
-                example = input()
-                examples.append(example)
+                print(f"Enter the input of example #{i}:")
+                example_in = input()
+                inputs.append(eval(example_in))
+                print(f"Enter the output of example #{i}:")
+                example_out = input()
+                outputs.append(eval(example_out))
 
-            # print("Please Provide a bound:")
+            print('inputs:', inputs)
+            print('outputs',outputs)
+            ast = WhileParser()(program)
+            pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip' and n != '??')
+            P, Q = create_conditions(inputs, outputs, pvars)
+            print('P', P)
+            print('Q', Q)
+            print('pvars', pvars)
+
+            for i in range(int(num_examples)):
+                p = lambda d: P[i]
+                q = lambda d: Q[i]
+                linv = None
+
+
+                # print("Please Provide a bound:")
             # bound = input()
             print("Interactive mode is not yet supported.")
         elif mode_automatic:
-            #TODO: Automatic mode
+            # TODO: Automatic mode
             print("Automatic mode is not yet supported.")
             time.sleep(0.5)
         else:
