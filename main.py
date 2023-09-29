@@ -1,83 +1,7 @@
 import time
 import commandlines
 from src.while_lang.syntax import WhileParser
-from src.while_lang.wp import verify
-import re
-
-
-def create_conditions(examples_before, examples_after, pvars):
-    P = []
-    Q = []
-
-    for example_in, example_out in zip(examples_before, examples_after):
-        p = []
-        q = []
-
-        for var, value in zip(pvars, example_in):
-            if value != '_':
-                p.append(f"d['{var}'] == {value}")
-
-        for var, value in zip(pvars, example_out):
-            if value != '_':
-                q.append(f"d['{var}'] == {value}")
-
-        P.append(p)
-        Q.append(q)
-
-    return P, Q
-
-
-def combine_conditions(condition_list):  # TO DO : make it work with more than 2 conditions
-    if not condition_list:
-        return None
-    elif len(condition_list) == 1:
-        return condition_list[0]
-    else:
-        combined_condition = "And(" + ", ".join(condition_list) + ")"
-        return combined_condition
-
-
-def holes_to_vars(program):  # this function replaces the holes with variables
-    hole_pattern = re.compile(r'\?\?')
-    vars= []
-
-    # Function to replace each match with a unique variable name
-    def replace_hole(match):
-        nonlocal vars
-        variable_name = f'v{len(vars) + 1}'
-        vars.append(variable_name)
-        return variable_name
-
-    output_program = re.sub(hole_pattern, replace_hole, program)
-
-    return output_program, vars
-
-
-def fill_holes(program, solution):
-    program_lines = program.split(';')
-
-    variable_mapping = {f'v{i + 1}': value for i, value in enumerate(solution)}
-
-    # Function to replace variable placeholders with solution values
-    def replace_variable(match):
-        variable_name = match.group()
-        return str(variable_mapping.get(variable_name, variable_name))
-
-    # Iterate through each line and replace variables with solution values
-    filled_program_lines = []
-    for line in program_lines:
-        filled_line = re.sub(r'v\d+', replace_variable, line)
-        filled_program_lines.append(filled_line)
-
-    # Join the lines to get the filled program
-    filled_program = ';'.join(filled_program_lines)
-
-    return filled_program
-
-
-def remove_asserts(program):
-    pass
-
+from synthesizer import Synthesizer
 
 if __name__ == "__main__":
     args = commandlines.parse_cmd_args()
@@ -90,7 +14,7 @@ if __name__ == "__main__":
     print("-" * 40)
     print(">> Starting Synthesis Engine...")
     time.sleep(0.3)
-    mode_interactive = args.I
+    mode_interactive = 1
     mode_automatic = args.A
     while True:
         if mode_interactive:
@@ -113,6 +37,7 @@ if __name__ == "__main__":
                 print("Please Provide a Program in While_lang:")
                 program = input()
                 invalid_program = True
+                synth = Synthesizer()
                 while invalid_program:
                     ast = WhileParser()(program)
                     if not ast:
@@ -120,19 +45,15 @@ if __name__ == "__main__":
                         program = input()
                     else:
                         invalid_program = False
-                # print("Please Provide a pre-condition:")
-                # pre = input()
-                # print("Please Provide a post-condition:")
-                # post = input()
-                # print("Please Provide a loop invariant:")
-                # linv = input()
+                print("Please Provide a loop invariant:")
+                linv = input()
                 print("Please Provide the number of Examples:")
                 num_examples = input()
+                ast = WhileParser()(program)
+                pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip' and n != '??')
                 print("The format of the example should be:\n"
-                      "input: (x1,y1...), (x2,y2...), ... , (xn,yn...) \n"
-                      "output: (x1',y1'...), (x2',y2'...), ... , (xn',yn'...) \n"
-                      "where (xi,yi...) are the input values of the variables in the program for example i.\n"
-                      "and (xi',yi'...) are the output values of the variables for example i.\n"
+                      f"input: {tuple(pvars)} \n"
+                      f"output: {tuple(pvars)} \n"
                       "if there is no input/output for a variable, please enter '_' instead.")
                 inputs = []
                 outputs = []
@@ -144,32 +65,11 @@ if __name__ == "__main__":
                     example_out = input()
                     outputs.append(eval(example_out))
 
-                print('inputs:', inputs)
-                print('outputs', outputs)
-                ast = WhileParser()(program)
-                pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip' and n != '??')
-                P, Q = create_conditions(inputs, outputs, pvars)
-                print('P', P)
-                print('Q', Q)
-                print('pvars', pvars)
-                holes = []
-                new_program , holes = holes_to_vars(program)
-                ast = WhileParser()(new_program)
-                for i in range(int(num_examples)):
-                    p = combine_conditions(P[i])
-                    q = combine_conditions(Q[i])
-                    print('p', p)
-                    print('q', q)
-                    p1 = lambda d: p
-                    q1 = lambda d: q
-                    linv = None
-                    # verify(p1, ast, q1, linv=linv)
-                    #
+                synth.synthesis_pbe(inputs, outputs, program, pvars, linv)
+
+
 
             elif args.ASSERT:
-                # al so2al ana ba5od kol al asserts w ba7othn bl Q m3 kol al program bdon holes bl
-                # verify wala ana ba5od assert wa7d w ba7otho bl Q wbkon al code ale abl howe al program ale bde adwr
-                # 3la alholes wb3den bkml la 7d ma y5lso al asserts
                 print("Please Provide a Program in While_lang that includes asserts :")
                 program = input()
                 invalid_program = True

@@ -9,7 +9,7 @@ from parsing.silly import SillyLexer
 
 class WhileParser(object):
 
-    TOKENS = r"(if|then|else|while|do|skip)(?![\w\d_])   (?P<id>[^\W\d]\w*)   (?P<num>[+\-]?\d+)   (?P<hole>[?]{2})   (?P<op>[!<>]=|([+\-*/<>=]))    [();]  :=".split()
+    TOKENS = r"(if|then|else|while|do|skip|assert)(?![\w\d_])   (?P<id>[^\W\d]\w*)   (?P<num>[+\-]?\d+)   (?P<hole>[?]{2})   (?P<op>[!<>]=|([+\-*/<>=]))    [();]  :=".split()
     GRAMMAR = r"""
     S   ->   S1     |   S1 ; S
     S1  ->   skip   |   id := E   |   if E then S else S1   |   while E do S1 |   assert E

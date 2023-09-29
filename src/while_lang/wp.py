@@ -1,4 +1,4 @@
-from while_lang.syntax import WhileParser
+from src.while_lang.syntax import WhileParser
 import operator
 from z3 import Int, ForAll, Implies, Not, And, Or, Solver, unsat, sat
 
@@ -93,12 +93,19 @@ if __name__ == '__main__':
     # P = lambda _: True
     # Q = lambda d: d['a'] == d['b']
     # linv = lambda d: d['a'] == d['b']
-    pvars = ['y', 'x', 'c']
-    program = "y := 1 - ?? ; if y = 0 then y := y - 1 else skip"
-    P = lambda _: True
-    Q = lambda d: d['y'] == -1
-    linv = lambda _: True
+    # pvars = ['a', 'b', 'c']
+    # program = "a := 0 ; b := c ; while a < 5 do (a := a + 1; b := b + 2)"
     #
+    # P = lambda d: d['c'] > 0
+    # Q = lambda d: d['b'] == 10
+    # linv = lambda d: d['a'] <= 5
+
+    pvars = ['y', 'x', 'z', 'c', 'c1']
+    program = "z:= x + c ; if  z >= 3 then y:= x + 1 else y:= x + c1"
+    P = lambda d: And(d['x'] == 0, d['z'] == 2)
+    Q = lambda d: And(And(d['y'] == 2, d['z'] == 2), d['x'] == 0)
+    linv = lambda _: True
+
     # Following are other programs that you might want to try
     #
 
