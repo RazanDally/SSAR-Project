@@ -17,6 +17,7 @@ class Synthesizer:
         self.P = None
         self.Q = None
         self.linv = ""
+        self.filled_program = ""
 
     def synthesis_pbe(self, inputs, outputs, program, pvars, linv):
         # TODO implement this function
@@ -25,35 +26,65 @@ class Synthesizer:
         self.program, self.holes = self.holes_to_vars(program)
         ast = WhileParser()(self.program)
         if ast:
-            print(">> Valid program.")
-            # Your task is to implement "verify"
-            solver = Solver()
 
+            pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip')
+            env = mk_env(pvars)
+
+            # Iterate over all inputs to find a possible filled_program
             for i in range(len(inputs)):
-                # p = self.combine_conditions(P[i])
-                # q = self.combine_conditions(Q[i])
-                # self.P[i] = lambda d: p(d)
-                # self.Q[i] = lambda d: q(d)
-                pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip')
-                env = mk_env(pvars)
+                solver = Solver()  # Create a new Solver instance for each input
                 formula = Implies(self.P[i](env), aux_verify(ast, self.Q[i], linv, env)(env))
                 solver.add(formula)
 
                 if solver.check() == unsat:
+                    print('unable to synthesize program for input', i)
+                    continue  # Continue with the next input
+
+                # Get the model and fill the holes in the program
+                sol = solver.model()
+                filled_program = self.fill_holes(self.program, sol)
+                ast_f = WhileParser()(filled_program)
+
+                # Verify the filled program for all P and Q
+                is_valid_for_all = all(verify(self.P[j], ast_f, self.Q[j], linv=self.linv) for j in range(len(inputs)))
+
+                if is_valid_for_all:
+                    print('found a valid filled program:', filled_program)
+                    return True  # Return True if a valid filled program is found
+                else:
+                    print(f'filled program {filled_program} is not valid for all P and Q')
+
+        print('No valid filled program found for all inputs')
+        return False  # Return False if no valid filled program is found for all inputs
+
+    def synthesis_assert(self, program, pre, post, linv):
+        # TODO implement this function
+        # TODO fix the P and Q and the printings
+        self.P = lambda _: True #pre
+        self.Q = lambda _: True #post
+        self.linv = lambda _: True #linv
+        self.program, self.holes = self.holes_to_vars(program)
+        ast = WhileParser()(self.program)
+        if ast:
+            pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip')
+            env = mk_env(pvars)
+            solver = Solver()
+            formula = Implies(self.P(env), aux_verify(ast, self.Q, linv, env)(env))
+            solver.add(formula)
+            if solver.check() == unsat:
+                print('unable to synthesize program')
+                return False
+            else:
+                sol = solver.model()
+                filled_program = self.fill_holes(self.program, sol)
+                ast_f = WhileParser()(filled_program)
+                is_valid = verify(self.P, ast_f, self.Q, linv=self.linv)
+                if is_valid:
+                    print('found a valid filled program:', filled_program)
                     return True
                 else:
-                    sol = solver.model()
-                    filled_program = self.fill_holes(self.program, sol)
-                    print('filled', filled_program)
-                    ast = WhileParser()(filled_program)
-                    print('ast', ast)
+                    print(f'filled program {filled_program} is not valid')
                     return False
-
-        ...
-
-    def synthesis_assert(program, pre, post, linv, bound):
-        # TODO implement this function
-        pass
 
     def synthesis_pbe_assert(program, pre, post, linv, bound, examples):
         # TODO implement this function do we need this function?
@@ -140,7 +171,6 @@ if __name__ == '__main__':
     ast = WhileParser()(program)
     synth = Synthesizer()
     if ast:
-        print(">> Valid program.")
         synth.synthesis_pbe([], [], program, pvars, None)
     else:
         print(">> Invalid program.")

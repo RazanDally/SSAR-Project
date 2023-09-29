@@ -14,9 +14,10 @@ if __name__ == "__main__":
     print("-" * 40)
     print(">> Starting Synthesis Engine...")
     time.sleep(0.3)
-    mode_interactive = 1
+    mode_interactive = args.I
     mode_automatic = args.A
     while True:
+        synth = Synthesizer()
         if mode_interactive:
             # TODO: Interactive mode
             if not args.PBE and not args.ASSERT and not args.PBE_ASSERT:
@@ -37,7 +38,6 @@ if __name__ == "__main__":
                 print("Please Provide a Program in While_lang:")
                 program = input()
                 invalid_program = True
-                synth = Synthesizer()
                 while invalid_program:
                     ast = WhileParser()(program)
                     if not ast:
@@ -50,7 +50,9 @@ if __name__ == "__main__":
                 print("Please Provide the number of Examples:")
                 num_examples = input()
                 ast = WhileParser()(program)
-                pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip' and n != '??')
+                pvars = list(n for n in ast.terminals if isinstance(n, str) and n != 'skip' and n != '??')
+                ordered_set = dict.fromkeys(pvars)
+                pvars = list(ordered_set.keys())
                 print("The format of the example should be:\n"
                       f"input: {tuple(pvars)} \n"
                       f"output: {tuple(pvars)} \n"
@@ -58,10 +60,10 @@ if __name__ == "__main__":
                 inputs = []
                 outputs = []
                 for i in range(int(num_examples)):
-                    print(f"Enter the input of example #{i}:")
+                    print(f"Enter the input of example #{i + 1}:")
                     example_in = input()
                     inputs.append(eval(example_in))
-                    print(f"Enter the output of example #{i}:")
+                    print(f"Enter the output of example #{i + 1}:")
                     example_out = input()
                     outputs.append(eval(example_out))
 
@@ -84,10 +86,13 @@ if __name__ == "__main__":
                 pre = input()
                 print("Please Provide a post-condition:")
                 post = input()
+                print("Please Provide a loop invariant:")
+                linv = input()
+                synth.synthesis_assert(program, pre, post, linv)
 
             elif args.PBE_ASSERT:
                 pass
-            print("Interactive mode is not yet supported.")
+
         elif mode_automatic:
             # TODO: Automatic mode
             print("Automatic mode is not yet supported.")

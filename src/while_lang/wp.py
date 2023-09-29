@@ -45,6 +45,10 @@ def aux_verify(ast, Q, linv, env1):
                                       And(Implies(And(linv(env1), b_cond(env1)), wp_c(env1)),
                                           Implies(And(linv(env1), Not(b_cond(env1))), Q(env1)))))
 
+    elif ast.root == 'assert':
+        b_cond = aux_verify(ast.subtrees[0], Q, linv, env1)
+        return lambda env: And(b_cond(env), Q(env))
+
     # Evaluate expressions
     elif ast.root == 'id':
         return lambda env: env[ast.subtrees[0].root]
@@ -69,7 +73,7 @@ def verify(P, ast, Q, linv=None):
     it is not.
     """
 
-    print(ast)
+    # print(ast)
     # from lib.adt.tree.viz import dot_print
     # dot_print(ast)
     # ...
@@ -126,8 +130,6 @@ if __name__ == '__main__':
     ast = WhileParser()(program)
 
     if ast:
-        print(">> Valid program.")
-        # Your task is to implement "verify"
         verify(P, ast, Q, linv=linv)
     else:
         print(">> Invalid program.")
