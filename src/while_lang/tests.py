@@ -87,10 +87,17 @@ def tests1():
 
     num = 3
     pvars = ['x', 'y']
-    examples_before =((0, '_'), (1, '_'), (2, '_'))
+    examples_before = ((0, '_'), (1, '_'), (2, '_'))
     examples_after = ((1, 8), (1, 5), (2, 6))
     prog_in = " y := 0 ; while y < ?? do ( y := y + x + ?? ); "
     prog_out = " y := 0 ; while y < 5 do ( y := y + x + 4 );"
+
+    num = 3
+    pvars = ['x', 'y']
+    examples_before = [(0, 0), (1, 2), (2, 2)]
+    examples_after = [(9, 1), (14, 4), (8, 3)]
+    prog_in = " while x < 8 do ( x := x + y + 4 ; y:= y + ??);"
+    prog_out = " while x < 8 do ( x := x + y + 4 ; y:= y + 1);"
 
     num = 3
     pvars = ['x', 'y']
@@ -125,6 +132,10 @@ def tests2():
     prog_out = "x := x + 1 ; y := x + x ; z := x * 3 + 1;"
 
     pvars = ['x', 'y']
+    prog_in = "x := 8; y:= ??; assert (y > x); y = y - ??; assert (x > y)"
+    prog_out = "x := 8; y:= 9; assert (y > x); y = y - 2 ; assert (x > y)"  # there is more than one answer
+
+    pvars = ['x', 'y']
     prog_in = "x := 2 * ??; if x == 6 then y:= 4; assert y == 4 "
     prog_out = "x := 2 * 3; if x == 6 then y:= 4; assert y == 4 "
 
@@ -136,9 +147,15 @@ def tests2():
     prog_in = "x := 8 + ?? , if z == y + ?? then y := 20 - x else y := 5; assert y > 5 "
     prog_out = " there is more than one answer"
 
+    pvars = ['x', 'y', 'z']
     prog_in = "y := x + ?? ; z := y + ?? ; i = x * ?? ; if z == 10 then i * x := 8 else i * x := 10 ; assert z == 10;"
     prog_out = "y := x + 3 ; z := y + 5 ; i = x * 2 ; if z == 10 then i * x := 8 else i * x := 10 ;"
     # there is more than one answer
+
+    pvars = ['x', 'y']
+    prog_in = "x:= 2; y:= ??; assert (y - 1 > x); if y - 3 == 5 then x := x + ?? else x:= x + 2 ; assert (x == 5);"
+    prog_out = "x:= 2; y:= 8 ; assert (y - 1 > x); if y - 3 == 5 then x := x + 3 else x:= x + 2 ; assert (x == 5);"
+
 
     pvars = ['x', 'y']
     prog_in = " y := ?? ; while x < 6 do ( x := y + 4 )  ; assert x == 6;"
@@ -148,4 +165,6 @@ def tests2():
     prog_in = "x := 0 ; y := x; while x < 8 do (x := x + 2; y := y + ??); assert (y > x)"
     prog_out = "x := 0 ; y := x; while x < 8 do (x := x + 2; y := y + 3);"  # there is more than one answer
 
-
+    pvars = ['x', 'y']
+    prog_in = "x := 3; y:= ??; assert (y > x); while x < 10 do (x := x + ?? ; y := y + 2); assert (x > y)"
+    prog_out = "x := 3; y:= 4; assert (y > x); while x < 10 do (x := x + 5 ; y := y + 2); assert (x > y)"
