@@ -64,8 +64,8 @@ def tests1():
 
     num = 5
     pvars = ['x', 'y', 'z']
-    examples_before = [(0, 2, '_'), (1, 3, '_'), (2, 3, '_'), (3, 4, '_'), (4, 5, '_')]
-    examples_after = [(0, 2, 2), (1, 3, 3), (2, 3, 3), (3, 4, 4), (4, 5, 5)]
+    examples_before = [(0, 1, '_'), (1, 2, '_'), (2, 3, '_'), (3, 4, '_'), (4, 5, '_')]
+    examples_after = [(0, 2, 1), (1, 3, 2), (2, 3, 3), (3, 4, 4), (4, 5, 5)]
     prog_in = "z:= x + ?? ; if  z >= 3 then y:= x + 1 else y:= x + ??"
     prog_out = "z:= x + 1 ; if  z >= 3 then y:= x + 1 else y:= x + 2"
 
@@ -112,7 +112,7 @@ def tests1():
 
 def tests2():
     pvars = ['x']
-    prog_in = "x := 5 + ?? ; assert x == 7;"
+    prog_in = "x := 5 + ?? ; assert x = 7;"
     prog_out = "x := 5 + 2"
 
     pvars = ['x']
@@ -120,15 +120,15 @@ def tests2():
     prog_out = "x := 2 - 1"
 
     pvars = ['x', 'y']
-    prog_in = "y := ?? * x ; assert y == x + x + x;"
+    prog_in = "y := ?? * x ; assert y = x + x + x;"
     prog_out = "y := 3 * x ;"
 
     pvars = ['x', 'y']
-    prog_in = "y := x + ?? ; assert y == x ;"
+    prog_in = "y := x + ?? ; assert y = x ;"
     prog_out = "y := x + 0 ;"
 
     pvars = ['x', 'y', 'z']
-    prog_in = "x := x + 1 ; y := x + x ; z := x * ?? + ?? ; assert z == x + y;"
+    prog_in = "x := x + 1 ; y := x + x ; z := x * ?? + ?? ; assert z = x + y;"
     prog_out = "x := x + 1 ; y := x + x ; z := x * 3 + 1;"
 
     pvars = ['x', 'y']
@@ -136,29 +136,29 @@ def tests2():
     prog_out = "x := 8; y:= 9; assert (y > x); y = y - 2 ; assert (x > y)"  # there is more than one answer
 
     pvars = ['x', 'y']
-    prog_in = "x := 2 * ??; if x == 6 then y:= 4; assert y == 4 "
-    prog_out = "x := 2 * 3; if x == 6 then y:= 4; assert y == 4 "
+    prog_in = "x := 2 * ??; if x = 6 then y:= 4; assert y = 4 else skip"
+    prog_out = "x := 2 * 3; if x = 6 then y:= 4; assert y = 4 else skip"
 
     pvars = ['x', 'y', 'z']
-    prog_in = "x := 8 + ?? , z:= x + y;  if z == 20 then y := 8 else y := 5; assert y == 8 "
-    prog_out = "x := 8 + 4 , z:= x + y;  if z == 20 then y := 8 else y := 5; assert y == 8 "
+    prog_in = "x := 8 + ?? , z:= x + y;  if z = 20 then y := 8 else y := 5; assert y = 8 "
+    prog_out = "x := 8 + 4 , z:= x + y;  if z = 20 then y := 8 else y := 5; assert y = 8 "
 
     pvars = ['x', 'y', 'z']
-    prog_in = "x := 8 + ?? , if z == y + ?? then y := 20 - x else y := 5; assert y > 5 "
+    prog_in = "x := 8 + ?? , if z = y + ?? then y := 20 - x else y := 5; assert y > 5 "
     prog_out = " there is more than one answer"
 
     pvars = ['x', 'y', 'z']
-    prog_in = "y := x + ?? ; z := y + ?? ; i = x * ?? ; if z == 10 then i * x := 8 else i * x := 10 ; assert z == 10;"
-    prog_out = "y := x + 3 ; z := y + 5 ; i = x * 2 ; if z == 10 then i * x := 8 else i * x := 10 ;"
+    prog_in = "y := x + ?? ; z := y + ?? ; i = x * ?? ; if z = 10 then i * x := 8 else i * x := 10 ; assert z = 10;"
+    prog_out = "y := x + 3 ; z := y + 5 ; i = x * 2 ; if z = 10 then i * x := 8 else i * x := 10 ;"
     # there is more than one answer
 
     pvars = ['x', 'y']
-    prog_in = "x:= 2; y:= ??; assert (y - 1 > x); if y - 3 == 5 then x := x + ?? else x:= x + 2 ; assert (x == 5);"
-    prog_out = "x:= 2; y:= 8 ; assert (y - 1 > x); if y - 3 == 5 then x := x + 3 else x:= x + 2 ; assert (x == 5);"
+    prog_in = "x:= 2; y:= ??; assert (y - 1 > x); if y - 3 = 5 then x := x + ?? else x:= x + 2 ; assert (x = 5);"
+    prog_out = "x:= 2; y:= 8 ; assert (y - 1 > x); if y - 3 = 5 then x := x + 3 else x:= x + 2 ; assert (x = 5);"
 
 
     pvars = ['x', 'y']
-    prog_in = " y := ?? ; while x < 6 do ( x := y + 4 )  ; assert x == 6;"
+    prog_in = " y := ?? ; while x < 6 do ( x := y + 4 )  ; assert x = 6;"
     prog_out = " y := 1 ; while x < 6 do ( x := y + 4 )"
 
     pvars = ['x', 'y']
