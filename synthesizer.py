@@ -19,8 +19,8 @@ class Synthesizer:
         self.linv = ""
         self.filled_program = ""
 
-    def synthesis_pbe(self, inputs, outputs, program, pvars, linv):
-        # TODO implement this function
+    def synthesis_pbe(self, program, pvars, linv, inputs, outputs):
+        # TODO fix printings
         self.P, self.Q = self.create_conditions(inputs, outputs, pvars)
         self.linv = lambda d: True
         self.program, self.holes = self.holes_to_vars(program)
@@ -58,15 +58,14 @@ class Synthesizer:
         return False  # Return False if no valid filled program is found for all inputs
 
     def synthesis_assert(self, program, pre, post, linv):
-        # TODO implement this function
-        # TODO fix the P and Q and the printings
-        self.P = lambda _: True #pre
-        self.Q = lambda _: True #post
-        self.linv = lambda _: True #linv
+        # TODO fix the printings
         self.program, self.holes = self.holes_to_vars(program)
         ast = WhileParser()(self.program)
         if ast:
             pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip')
+            self.P = self.str_exp_to_z3(pre, pvars)
+            self.Q = self.str_exp_to_z3(post, pvars)
+            self.linv = self.str_exp_to_z3(linv, pvars)
             env = mk_env(pvars)
             solver = Solver()
             formula = Implies(self.P(env), aux_verify(ast, self.Q, linv, env)(env))
@@ -86,7 +85,7 @@ class Synthesizer:
                     print(f'filled program {filled_program} is not valid')
                     return False
 
-    def synthesis_pbe_assert(program, pre, post, linv, bound, examples):
+    def synthesis_pbe_assert(self, program, pre, post, linv, inputs, outputs):
         # TODO implement this function do we need this function?
         pass
 
@@ -113,16 +112,15 @@ class Synthesizer:
 
         return self.P, self.Q
 
-    def combine_conditions(self, condition_list):  # this function combines the conditions into one condition
-        if not condition_list:
-            return None
-        elif len(condition_list) == 1:
-            return condition_list[0]
-        else:
-            combined_condition = condition_list[0]
-            for i in range(len(condition_list) - 1):
-                combined_condition = And(combined_condition, condition_list[i + 1])
-            return combined_condition
+    def str_exp_to_z3(self, s, pvars):
+        if s == 'True':
+            return lambda _: True
+        elif s == 'False':
+            return lambda _: False
+        env_eval = mk_env(pvars)
+        env_eval.update({'And': And, 'Or': Or, 'Not': Not, 'Implies': Implies, 'ForAll': ForAll, 'True': True, 'False': False})
+        expr = eval(s, None, env_eval)
+        return lambda env: expr
 
     def holes_to_vars(self, program):  # this function replaces the holes with variables
         hole_pattern = re.compile(r'\?\?')
