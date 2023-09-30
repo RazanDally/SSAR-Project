@@ -140,15 +140,15 @@ def tests2():
     prog_in = "y := x + ?? ; assert y >= x"
     prog_out = "y := x + 5"
 
-    pvars = ['x', 'y', 'z']
-    prog_in = "x := x + 1 ; y := x + x ; z := x * ?? + ?? ; assert z = x + y"
-    prog_out = "x := x + 1 ; y := x + x ; z := x * 3 + 1"
+    pvars = ['y', 'x', 'z']
+    prog_in = "y := x + x ; z := x * ?? + ?? ; assert z - 1 = x + y"
+    prog_out = "y := x + x ; z := x * 3 + 1"
 
     pvars = ['x', 'y']
     pre_conditions = ['y > 0']
     post_conditions = ['y == 9']
     prog_in = "x := 8; y:= ??; assert (y > x); y = y - ??; assert (x > y)"
-    prog_out = "x := 8; y:= 9; assert (y > x); y = y - 2 ;"
+    prog_out = "x := 8; y:= 9; y = y - 2 ;"
 
     pvars = ['x', 'y']
     prog_in = "x := 2 * ??; if x = 6 then y:= 4; assert y = 4 else skip"
@@ -166,21 +166,42 @@ def tests2():
 
     pvars = ['y', 'x', 'z', 'i']
     pre_conditions = ['x > 0']
-    post_conditions = ['']
+    post_conditions = True
     prog_in = "y := x + ?? ; z := y + ?? ; i = x * ?? ; if z = 10 then i * x := 8 else i * x := 10 ; assert z = 10"
     prog_out = "y := x + 3 ; z := y + 5 ; i = x * 2 ; if z = 10 then i * x := 8 else i * x := 10"
 
     pvars = ['x', 'y']
     prog_in = "x:= 2; y:= ??; assert (y - 1 > x); if y - 3 = 5 then x := x + ?? else x:= x + 2 ; assert (x = 5)"
-    prog_out = "x:= 2; y:= 8 ; assert (y - 1 > x); if y - 3 = 5 then x := x + 3 else x:= x + 2"
+    prog_out = "x:= 2; y:= 8 ; if y - 3 = 5 then x := x + 3 else x:= x + 2"
 
     pvars = ['x', 'y']
-    pre_conditions = []
+    pre_conditions = True
     post_conditions = ['And(x == 8,y == 8)']
     prog_in = "x:= 3; y:= ??; assert (y - 1 > x); if y - 3 = 5 then x := x + ?? else x:= x + 6"
-    prog_out = "x:= 3; y:= 8 ; assert (y - 1 > x); if y - 3 = 4 then x := x + 3 else x:= x + 6"
+    prog_out = "x:= 3; y:= 8 ; if y - 3 = 4 then x := x + 3 else x:= x + 6"
+
+    # tests that don't have a solution
+
+    pvars = ['y', 'x']
+    pre_conditions = True
+    post_conditions = ['x == 8']
+    prog_in = "y:= x + ?? ; if y = 10 then x := 5 else x := 9"
+    prog_out = "no valid program :( :("
+
+    pvars = ['x', 'y']
+    pre_conditions = True
+    post_conditions = ['And(x == 5,y == 8)']
+    prog_in = "x:= 3; y:= ??; assert (y - 1 > x); if y - 3 = 5 then x := x + ?? else x:= x + 6"
+    prog_out = "no valid program :( :("
+
+    pvars = ['x', 'y', 'z']
+    pre_conditions = True
+    post_conditions = ['y == 6']
+    prog_in = "x := 8 + ?? , z:= x + y;  if z = 20 then y := 8 else y := 5; assert y = 8"
+    prog_out = "no valid program :( :("
 
     # while loops with holes
+
     pvars = ['y', 'x']
     prog_in = " y := ?? ; while x < 6 do ( x := y + 4 )  ; assert x = 6"
     prog_out = " y := 1 ; while x < 6 do ( x := y + 4 )"
@@ -192,3 +213,48 @@ def tests2():
     pvars = ['x', 'y']
     prog_in = "x := 3; y:= ??; assert (y > x); while x < 10 do (x := x + ?? ; y := y + 2); assert (x > y)"
     prog_out = "x := 3; y:= 4; assert (y > x); while x < 10 do (x := x + 5 ; y := y + 2)"
+
+
+#######################################################################################################
+# tests for feature 1 and 2 together
+
+def tests3():
+    num = 0
+    pvars = ['x']
+    prog_in = "x := 5 + ?? ; assert x = 10"
+    prog_out = "x := 5 + 5"
+
+    num = 1
+    pvars = ['y', 'x']
+    exmples_before = [('_', 2)]
+    examples_after = [(5, 2)]
+    prog_in = "y := x * ?? + ??; assert y - 1 == 2 * x"
+    prog_out = "y := x * 2 + 1"
+
+    num = 2
+    pvars = ['y', 'x']
+    exmples_before = [('_', 2), ('_', 4)]
+    examples_after = [(6, 2), (10, 4)]
+    prog_in = "y := x * ?? + ??; assert y = 7"
+    prog_out = "no valid program :( :("
+
+    num = 2
+    pvars = ['y', 'x', 'z']
+    examples_before = [('_', 0, '_'), ('_', 2, '_')]
+    examples_after = [(4, 0, 3), (10, 2, 9)]
+    prog_in = "y:= x * ?? + ?? ; z := y - ?? ; assert y = z + 1"
+    prog_out = "y:= x * 3 + 4 ; z := y - 1"
+
+    num = 1
+    pvars = ['y', 'x', 'z']
+    examples_before = [('_', 1, '_')]
+    examples_after = [(2, 1, 4)]
+    prog_in = "y := x + x ; z := x * ?? + ?? ; assert z - 1 = x + y"
+    prog_out = "y := x + x ; z := x * 3 + 1"
+
+    num = 1
+    pvars = ['x', 'z', 'y']
+    examples_before = [('_', '_', 1)]
+    examples_after = [(3, 20, 8)]
+    prog_in = "x := 8 + ?? , z:= x + y + ??; assert z - x == 4; if z = 20 then y := 8 else y := 5; assert z == 20 "
+    prog_out = "x := 8 + 7 , z:= x + y + 4; if z = 20 then y := 8 else y := 5"
