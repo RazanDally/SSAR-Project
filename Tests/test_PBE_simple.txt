@@ -37,19 +37,19 @@ num = 3
 pvars = ['y', 'x']
 examples_before = [('_', 0), ('_', 1), ('_', 2)]
 examples_after = [(2, 0), (6, 1), (10, 2)]
-prog_in = "y:= (x * ??) + ??"
+prog_in = "y:= (x * ??) + 2"
 prog_out = "y:= (x * 4) + 2"
 
 num = 3
 pvars = ['y', 'x', 'z']
 examples_before = [('_', 1, 2), ('_', 2, 1), ('_', 3, 3)]
 examples_after = [(10, 1, 2), (12, 2, 1), (17, 3, 3)]
-prog_in = "y:= (x * ??) + (z + ??)"
+prog_in = "y:= (x * ??) + (z + 5)"
 prog_out = "y:= (x * 3) + (z + 5)"
 
 num = 2
 pvars = ['z', 'y', 'x']
 examples_before = [('_', '_', 1), ('_', '_', 2)]
-examples_after = [(4, 4, 1), (8, 8, 2)]
+examples_after = [(4, 4, 1), (4, 8, 2)]
 prog_in = " z := ?? ; y := x * z"
 prog_out = " z := 4 ; y := x * z"
