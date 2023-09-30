@@ -5,35 +5,35 @@ prog_out = "x := 5 + 5"
 
 num = 1
 pvars = ['y', 'x']
-exmples_before = [('_', 2)]
-examples_after = [(5, 2)]
-prog_in = "y := x * ?? + ??; assert y - 1 == 2 * x"
+examples_before = [('_', 2), ('_', 4)]
+examples_after = [(5, 2), (9, 4)]
+prog_in = "y := (x * ??) + 1; assert (y - 1) = (2 * x)"
 prog_out = "y := x * 2 + 1"
 
 num = 2
 pvars = ['y', 'x']
-exmples_before = [('_', 2), ('_', 4)]
+examples_before = [('_', 2), ('_', 4)]
 examples_after = [(6, 2), (10, 4)]
-prog_in = "y := x * ?? + ??; assert y = 7"
+prog_in = "y := (x * ??) + ??; assert y = 7"
 prog_out = "no valid program :( :("
 
 num = 2
 pvars = ['y', 'x', 'z']
 examples_before = [('_', 0, '_'), ('_', 2, '_')]
 examples_after = [(4, 0, 3), (10, 2, 9)]
-prog_in = "y:= x * ?? + ?? ; z := y - ?? ; assert y = z + 1"
+prog_in = "y:= (x * 3) + ?? ; z := y - ?? ; assert y = (z + 1)"
 prog_out = "y:= x * 3 + 4 ; z := y - 1"
 
 num = 1
 pvars = ['y', 'x', 'z']
-examples_before = [('_', 1, '_')]
-examples_after = [(2, 1, 4)]
-prog_in = "y := x + x ; z := x * ?? + ?? ; assert z - 1 = x + y"
+examples_before = [('_', 1, '_'), ('_', 2, '_')]
+examples_after = [(2, 1, 4), (4, 2, 7)]
+prog_in = "y := x + x ; z := (x * ??) + 1 ; assert (z - 1) = (x + y)"
 prog_out = "y := x + x ; z := x * 3 + 1"
 
 num = 1
 pvars = ['x', 'z', 'y']
 examples_before = [('_', '_', 1)]
 examples_after = [(3, 20, 8)]
-prog_in = "x := 8 + ?? , z:= x + y + ??; assert z - x == 4; if z = 20 then y := 8 else y := 5; assert z == 20 "
-prog_out = "x := 8 + 7 , z:= x + y + 4; if z = 20 then y := 8 else y := 5"
+prog_in = "x := 8 + ?? ; z:= (x + y) + ??; assert (z - x) = 4; if z = 20 then y := 8 else y := 5; assert z = 20 "
+prog_out = "no valid program :( :("

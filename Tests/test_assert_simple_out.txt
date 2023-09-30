@@ -1,0 +1,31 @@
+Synthesis Results:
+Test 1:
+Program: "x := 5 + ?? ; assert x = 7"
+Program Expected Output: "x := 5 + 2"
+Synthesized Program: "x := 5 + 2 ; assert x = 7"
+
+Test 2:
+Program: "x := 2 - ?? ; assert x > 0"
+Program Expected Output: "x := 2 - 1"
+Synthesized Program: "x := 2 - 1 ; assert x > 0"
+
+Test 3:
+Program: "y := ?? * x ; assert y = ((x + x) + x)"
+Program Expected Output: "y := 3 * x"
+Synthesized Program: "y := 3 * x ; assert y = ((x + x) + x)"
+
+Test 4:
+Program: "y := x + ?? ; assert y = x"
+Program Expected Output: "y := x + 0"
+Synthesized Program: "y := x + 0 ; assert y = x"
+
+Test 5:
+Program: "y := x + ?? ; assert y >= x"
+Program Expected Output: "y := x + 5"
+Synthesized Program: No Valid Program Found.
+
+Test 6:
+Program: "y := x + x ; z := (x * ??) + 1 ; assert (z - 1) = (x + y)"
+Program Expected Output: "y := x + x ; z := (x * 3) + 1"
+Synthesized Program: "y := x + x ; z := (x * 3) + 1 ; assert (z - 1) = (x + y)"
+
