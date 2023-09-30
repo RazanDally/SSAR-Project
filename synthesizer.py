@@ -12,6 +12,8 @@ OP = {'+': operator.add, '-': operator.sub,
 
 class Synthesizer:
     def __init__(self):
+        self.filled_holes = 0
+        self.synthesized_program = ""
         self.program = ""
         self.holes = None
         self.P = None
@@ -24,21 +26,19 @@ class Synthesizer:
         self.linv = self.str_exp_to_z3(linv, pvars)
         self.program, self.holes = self.holes_to_vars(program)
         ast = WhileParser()(self.program)
+        self.synthesized_program = ""
         if ast:
 
             pvars = set(n for n in ast.terminals if isinstance(n, str) and n != 'skip')
             env = mk_env(pvars)
-
+            possible_programs = []
             # Iterate over all inputs to find a possible filled_program
             for i in range(len(inputs)):
                 solver = Solver()  # Create a new Solver instance for each input
-                formula = Implies(self.P[i](env), aux_verify(ast, self.Q[i], linv, env)(env))
+                formula = And(self.P[i](env), aux_verify(ast, self.Q[i], self.linv, env)(env))
                 solver.add(formula)
-
                 if solver.check() == unsat:
-                    print('Unable to Synthesize program for input', i)
                     continue  # Continue with the next input
-
                 # Get the model and fill the holes in the program
                 sol = solver.model()
                 filled_program = self.fill_holes(self.program, sol)
@@ -47,14 +47,44 @@ class Synthesizer:
                 # Verify the filled program for all P and Q
                 is_valid_for_all = all(verify(self.P[j], ast_f, self.Q[j], linv=self.linv) for j in range(len(inputs)))
 
-                if is_valid_for_all:
-                    print('Found a valid program for all Examples: \n', filled_program)
-                    return True  # Return True if a valid filled program is found
-                else:
-                    print(f'Program {filled_program} is not valid for all Examples')
+                if self.filled_holes != len(self.holes):
+                    possible_programs.append(filled_program)
 
-        print('No valid program found for all inputs')
+                if is_valid_for_all:
+                    self.set_synthesized_program(filled_program)
+                    return True  # Return True if a valid filled program is found
+
+            if len(possible_programs) > 0:
+                curr = possible_programs[0]
+                for prog in possible_programs:
+                    if curr != prog:
+                        curr = self.merge_programs(curr, prog)
+                        ast_f = WhileParser()(curr)
+                        is_valid_for_all = all(
+                            verify(self.P[j], ast_f, self.Q[j], linv=self.linv) for j in range(len(inputs)))
+                        if is_valid_for_all:
+                            self.set_synthesized_program(curr)
+                            return True
+
         return False  # Return False if no valid filled program is found for all inputs
+
+    def merge_programs(self, prog1, prog2):
+        prog1 = prog1.split(";")
+        prog2 = prog2.split(";")
+        var_pattern = re.compile(r'v\d+')
+
+        for i in range(len(prog1)):
+            matches1 = list(var_pattern.finditer(prog1[i]))
+            matches2 = list(var_pattern.finditer(prog2[i]))
+            if matches2 == 0:
+                if prog1[i] != prog2[i]:
+                    prog1[i] = prog2[i]
+            if matches1 != 0:
+                for m in matches1:
+                    index = prog1[i].index(m.group())
+                    if prog2[i][index] != prog1[i][index]:
+                        prog1[i] = prog1[i].replace(m.group(), prog2[i][index])
+        return ";".join(prog1)
 
     def synthesis_assert(self, program, pre, post, linv):
         self.program, self.holes = self.holes_to_vars(program)
@@ -66,10 +96,9 @@ class Synthesizer:
             self.linv = self.str_exp_to_z3(linv, pvars)
             env = mk_env(pvars)
             solver = Solver()
-            formula = Implies(self.P(env), aux_verify(ast, self.Q, linv, env)(env))
+            formula = And(self.P(env), aux_verify(ast, self.Q, self.linv, env)(env))
             solver.add(formula)
             if solver.check() == unsat:
-                print('Unable to Synthesize the Program!')
                 return False
             else:
                 sol = solver.model()
@@ -77,10 +106,9 @@ class Synthesizer:
                 ast_f = WhileParser()(filled_program)
                 is_valid = verify(self.P, ast_f, self.Q, linv=self.linv)
                 if is_valid:
-                    print('Found a valid program:', filled_program)
+                    self.set_synthesized_program(filled_program)
                     return True
                 else:
-                    print(f'Program {filled_program} is not valid!')
                     return False
 
     def create_conditions(self, examples_before, examples_after, pvars):
@@ -133,12 +161,22 @@ class Synthesizer:
         self.holes = vars
         return output_program, vars
 
+    def vars_to_holes(self, program_with_vars):
+        # Regular expression pattern to match variables of the form 'v' followed by one or more digits
+        var_pattern = re.compile(r'\bv\d+\b')
+
+        # Replace each match with '??'
+        program_with_holes = re.sub(var_pattern, '??', program_with_vars)
+        return program_with_holes
+
     def fill_holes(self, program, model):
         program_lines = program.split(';')
 
         # Extract variable assignments from the model
         variable_mapping = {}
         for d in model.decls():
+            if d.name() in self.holes:
+                self.filled_holes += 1
             variable_mapping[d.name()] = model[d].as_long()  # Convert ExprRef to Python int
 
         # Function to replace variable placeholders with solution values
@@ -156,6 +194,9 @@ class Synthesizer:
         filled_program = ';'.join(filled_program_lines)
 
         return filled_program
+
+    def set_synthesized_program(self, filled_program):
+        self.synthesized_program = filled_program
 
 
 if __name__ == '__main__':
