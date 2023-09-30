@@ -1,0 +1,21 @@
+Synthesis Results:
+Test 1:
+Program: "if x >= 3 then y:= x + ?? else y:= 5"
+Program Expected Output: "if x >= 3 then y:= x + 3 else y:= 5"
+Synthesized Program: "if x >= 3 then y:= x + 3 else y:= 5"
+
+Test 2:
+Program: "z:= x + ?? ; if  z >= 3 then y:= x + 1 else y:= x + ??"
+Program Expected Output: "z:= x + 1 ; if  z >= 3 then y:= x + 1 else y:= x + 2"
+Synthesized Program: "z:= x + 1 ; if  z >= 3 then y:= x + 1 else y:= x + 2"
+
+Test 3:
+Program: "if x > 2 then y:= x * ?? else y:= ??"
+Program Expected Output: "if x > 2 then y:= x * 6 else y:= 4"
+Synthesized Program: "if x > 2 then y:= x * 6 else y:= 4"
+
+Test 4:
+Program: "if x >= 2 then y:= x * ?? else y:= x * ??"
+Program Expected Output: "if x >= 2 then y:= x * 1 else y:= x * 2"
+Synthesized Program: "if x >= 2 then y:= x * 1 else y:= x * 2"
+
