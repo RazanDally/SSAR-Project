@@ -86,7 +86,6 @@ def verify(P, ast, Q, linv=None):
     if solver.check() == unsat:
         return True
     else:
-        print(solver.model())
         return False
 
 

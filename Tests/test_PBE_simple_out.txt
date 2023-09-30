@@ -25,17 +25,17 @@ Program Expected Output: "z:= (x + y) + 3"
 Synthesized Program: "z:= (x + y) + 3"
 
 Test 6:
-Program: "y:= (x * ??) + ?? "
+Program: "y:= (x * ??) + 2"
 Program Expected Output: "y:= (x * 4) + 2"
-Synthesized Program: No Valid Program Found.
+Synthesized Program: "y:= (x * 4) + 2"
 
 Test 7:
-Program: "y:= (x * ??) + (z + ??)"
+Program: "y:= (x * ??) + (z + 5)"
 Program Expected Output: "y:= (x * 3) + (z + 5)"
-Synthesized Program: No Valid Program Found.
+Synthesized Program: "y:= (x * 3) + (z + 5)"
 
 Test 8:
 Program: " z := ?? ; y := x * z"
 Program Expected Output: " z := 4 ; y := x * z"
-Synthesized Program: No Valid Program Found.
+Synthesized Program: " z := 4 ; y := x * z"
 

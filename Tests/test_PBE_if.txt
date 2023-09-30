@@ -23,5 +23,5 @@ num = 4
 pvars = ['x', 'y']
 examples_before = [(0, '_'), (1, '_'), (4, '_'), (5, '_')]
 examples_after = [(0, 0), (1, 2), (4, 4), (5, 5)]
-prog_in = "if x >= ?? then y:= x * ?? else y:= x * ??"
+prog_in = "if x >= 2 then y:= x * ?? else y:= x * ??"
 prog_out = "if x >= 2 then y:= x * 1 else y:= x * 2"
