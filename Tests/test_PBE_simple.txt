@@ -1,0 +1,55 @@
+num = 2
+pvars = ['y', 'x']
+examples_before = [('_', 0), ('_', 1)]
+examples_after = [(1, 0), (2, 1)]
+prog_in = "y:= x + ??"
+prog_out = "y:= x + 1"
+
+num = 2
+pvars = ['y', 'x']
+examples_before = [('_', 2), ('_', 4)]
+examples_after = [(0, 2), (2, 4)]
+prog_in = "y:= x - ??"
+prog_out = "y:= x - 2"
+
+num = 3
+pvars = ['y', 'x']
+examples_before = [('_', 0), ('_', 2), ('_', 3)]
+examples_after = [(0, 0), (4, 2), (6, 3)]
+prog_in = "y:= x * ??"
+prog_out = "y:= x * 2"
+
+num = 3
+pvars = ['y', 'x']
+examples_before = [('_', 1), ('_', 2), ('_', 3)]
+examples_after = [(4, 1), (7, 2), (10, 3)]
+prog_in = "y:= x * ?? + 1"
+prog_out = "y:= x * 3 + 1"
+
+num = 2
+pvars = ['z', 'x', 'y']
+examples_before = [(0, 1, '_'), (1, 3, '_')]
+examples_after = [('_', '_', 4), ('_', '_', 7)]
+prog_in = "z:= x + y + ??"
+prog_out = "z:= x + y + 3"
+
+num = 3
+pvars = ['y', 'x']
+examples_before = [('_', 0), ('_', 1), ('_', 2)]
+examples_after = [(2, 0), (6, 1), (10, 2)]
+prog_in = "y:= x * ?? + ?? "
+prog_out = "y:= x * 4 + 2"
+
+num = 3
+pvars = ['y', 'x', 'z']
+examples_before = [('_', 1, 2), ('_', 2, 1), ('_', 3, 3)]
+examples_after = [(10, 1, 2), (12, 2, 1), (17, 3, 3)]
+prog_in = "y:= x * ?? + z + ??"
+prog_out = "y:= x * 3 + z + 5"
+
+num = 2
+pvars = ['z', 'y', 'x']
+examples_before = (('_', '_', 1), ('_', '_', 2))
+examples_after = ((4, 4, 1), (8, 8, 2))
+prog_in = " z := ?? ; y := x * z"
+prog_out = " z := 4 ; y := x * z"

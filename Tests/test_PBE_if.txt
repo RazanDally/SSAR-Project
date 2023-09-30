@@ -1,0 +1,27 @@
+num = 3
+pvars = ['x', 'y']
+examples_before = [(1, '_'), (3, '_'), (4, '_')]
+examples_after = [(1, 5), (3, 6), (4, 7)]
+prog_in = "if x >= 3 then y:= x + ?? else y:= 5"
+prog_out = "if x >= 3 then y:= x + 3 else y:= 5"
+
+num = 3
+pvars = ['z', 'x', 'y']
+examples_before = [('_', 1, '_'), ('_', 2, '_'), ('_', 3, '_')]
+examples_after = [(2, 1, 3), (3, 2, 3), (4, 3, 4)]
+prog_in = "z:= x + ?? ; if  z >= 3 then y:= x + 1 else y:= x + ??"
+prog_out = "z:= x + 1 ; if  z >= 3 then y:= x + 1 else y:= x + 2"
+
+num = 4
+pvars = ['x', 'y']
+examples_before = [(1, '_'), (2, '_'), (3, '_'), (4, '_')]
+examples_after = [(1, 4), (2, 4), (3, 18), (4, 24)]
+prog_in = "if x > 2 then y:= x * ?? else y:= ??"
+prog_out = "if x > 2 then y:= x * 6 else y:= 4"
+
+num = 4
+pvars = ['x', 'y']
+examples_before = [(0, '_'), (1, '_'), (4, '_'), (5, '_')]
+examples_after = [(0, 0), (1, 2), (4, 4), (5, 5)]
+prog_in = "if x >= ?? then y:= x * ?? else y:= x * ??"
+prog_out = "if x >= 2 then y:= x * 1 else y:= x * 2"

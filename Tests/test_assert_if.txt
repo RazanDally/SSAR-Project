@@ -1,0 +1,29 @@
+pvars = ['x', 'y']
+prog_in = "x := 2 * ??; if x = 6 then y:= 4; assert y = 4 else skip"
+prog_out = "x := 2 * 3; if x = 6 then y:= 4  else skip"
+
+pvars = ['x', 'z', 'y']
+prog_in = "x := 8 + ?? , z:= x + y;  if z = 20 then y := 8 else y := 5; assert y = 8"
+prog_out = "x := 8 + 4 , z:= x + y;  if z = 20 then y := 8 else y := 5"
+
+pvars = ['x', 'z', 'y']
+pre_conditions = ['And(y > 0 , z > 0)']
+post_conditions = ['And(x==12 ,y==8)']
+prog_in = "x := 8 + ?? , if z = y + ?? then y := 20 - x else y := 5; assert y > 5"
+prog_out = "x := 8 + 4 , if z = y + 4 then y := 20 - x else y := 5"
+
+pvars = ['y', 'x', 'z', 'i']
+pre_conditions = ['x > 0']
+post_conditions = True
+prog_in = "y := x + ?? ; z := y + ?? ; i = x * ?? ; if z = 10 then i * x := 8 else i * x := 10 ; assert z = 10"
+prog_out = "y := x + 3 ; z := y + 5 ; i = x * 2 ; if z = 10 then i * x := 8 else i * x := 10"
+
+pvars = ['x', 'y']
+prog_in = "x:= 2; y:= ??; assert (y - 1 > x); if y - 3 = 5 then x := x + ?? else x:= x + 2 ; assert (x = 5)"
+prog_out = "x:= 2; y:= 8 ; if y - 3 = 5 then x := x + 3 else x:= x + 2"
+
+pvars = ['x', 'y']
+pre_conditions = True
+post_conditions = ['And(x == 8,y == 8)']
+prog_in = "x:= 3; y:= ??; assert (y - 1 > x); if y - 3 = 5 then x := x + ?? else x:= x + 6"
+prog_out = "x:= 3; y:= 8 ; if y - 3 = 4 then x := x + 3 else x:= x + 6"

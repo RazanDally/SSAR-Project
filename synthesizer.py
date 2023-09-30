@@ -20,7 +20,6 @@ class Synthesizer:
         self.filled_program = ""
 
     def synthesis_pbe(self, program, pvars, linv, inputs, outputs):
-        # TODO fix printings
         self.P, self.Q = self.create_conditions(inputs, outputs, pvars)
         self.linv = self.str_exp_to_z3(linv, pvars)
         self.program, self.holes = self.holes_to_vars(program)
@@ -37,7 +36,7 @@ class Synthesizer:
                 solver.add(formula)
 
                 if solver.check() == unsat:
-                    print('unable to synthesize program for input', i)
+                    print('Unable to Synthesize program for input', i)
                     continue  # Continue with the next input
 
                 # Get the model and fill the holes in the program
@@ -49,16 +48,15 @@ class Synthesizer:
                 is_valid_for_all = all(verify(self.P[j], ast_f, self.Q[j], linv=self.linv) for j in range(len(inputs)))
 
                 if is_valid_for_all:
-                    print('found a valid filled program:', filled_program)
+                    print('Found a valid program for all Examples: \n', filled_program)
                     return True  # Return True if a valid filled program is found
                 else:
-                    print(f'filled program {filled_program} is not valid for all P and Q')
+                    print(f'Program {filled_program} is not valid for all Examples')
 
-        print('No valid filled program found for all inputs')
+        print('No valid program found for all inputs')
         return False  # Return False if no valid filled program is found for all inputs
 
     def synthesis_assert(self, program, pre, post, linv):
-        # TODO fix the printings
         self.program, self.holes = self.holes_to_vars(program)
         ast = WhileParser()(self.program)
         if ast:
@@ -71,7 +69,7 @@ class Synthesizer:
             formula = Implies(self.P(env), aux_verify(ast, self.Q, linv, env)(env))
             solver.add(formula)
             if solver.check() == unsat:
-                print('unable to synthesize program')
+                print('Unable to Synthesize the Program!')
                 return False
             else:
                 sol = solver.model()
@@ -79,10 +77,10 @@ class Synthesizer:
                 ast_f = WhileParser()(filled_program)
                 is_valid = verify(self.P, ast_f, self.Q, linv=self.linv)
                 if is_valid:
-                    print('found a valid filled program:', filled_program)
+                    print('Found a valid program:', filled_program)
                     return True
                 else:
-                    print(f'filled program {filled_program} is not valid')
+                    print(f'Program {filled_program} is not valid!')
                     return False
 
     def create_conditions(self, examples_before, examples_after, pvars):

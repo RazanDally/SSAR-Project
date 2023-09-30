@@ -1,0 +1,17 @@
+pvars = ['y', 'x']
+pre_conditions = True
+post_conditions = ['x == 8']
+prog_in = "y:= x + ?? ; if y = 10 then x := 5 else x := 9"
+prog_out = "no valid program :( :("
+
+pvars = ['x', 'y']
+pre_conditions = True
+post_conditions = ['And(x == 5,y == 8)']
+prog_in = "x:= 3; y:= ??; assert (y - 1 > x); if y - 3 = 5 then x := x + ?? else x:= x + 6"
+prog_out = "no valid program :( :("
+
+pvars = ['x', 'y', 'z']
+pre_conditions = True
+post_conditions = ['y == 6']
+prog_in = "x := 8 + ?? , z:= x + y;  if z = 20 then y := 8 else y := 5; assert y = 8"
+prog_out = "no valid program :( :("

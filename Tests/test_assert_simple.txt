@@ -1,0 +1,31 @@
+pvars = ['x']
+prog_in = "x := 5 + ?? ; assert x = 7"
+prog_out = "x := 5 + 2"
+
+pvars = ['x']
+prog_in = "x := 2 - ?? ; assert x > 0"
+prog_out = "x := 2 - 1"
+
+pvars = ['y', 'x']
+prog_in = "y := ?? * x ; assert y = x + x + x"
+prog_out = "y := 3 * x"
+
+pvars = ['y', 'x']
+prog_in = "y := x + ?? ; assert y = x"
+prog_out = "y := x + 0"
+
+pvars = ['y', 'x']
+pre_conditions = ['x == 2']
+post_conditions = ['y == 7']
+prog_in = "y := x + ?? ; assert y >= x"
+prog_out = "y := x + 5"
+
+pvars = ['y', 'x', 'z']
+prog_in = "y := x + x ; z := x * ?? + ?? ; assert z - 1 = x + y"
+prog_out = "y := x + x ; z := x * 3 + 1"
+
+pvars = ['x', 'y']
+pre_conditions = ['y > 0']
+post_conditions = ['y == 9']
+prog_in = "x := 8; y:= ??; assert (y > x); y = y - ??; assert (x > y)"
+prog_out = "x := 8; y:= 9; y = y - 2 ;"
