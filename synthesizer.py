@@ -22,7 +22,7 @@ class Synthesizer:
     def synthesis_pbe(self, program, pvars, linv, inputs, outputs):
         # TODO fix printings
         self.P, self.Q = self.create_conditions(inputs, outputs, pvars)
-        self.linv = lambda d: True
+        self.linv = self.str_exp_to_z3(linv, pvars)
         self.program, self.holes = self.holes_to_vars(program)
         ast = WhileParser()(self.program)
         if ast:
@@ -85,10 +85,6 @@ class Synthesizer:
                     print(f'filled program {filled_program} is not valid')
                     return False
 
-    def synthesis_pbe_assert(self, program, pre, post, linv, inputs, outputs):
-        # TODO implement this function do we need this function?
-        pass
-
     def create_conditions(self, examples_before, examples_after, pvars):
         self.P = []
         self.Q = []
@@ -118,7 +114,8 @@ class Synthesizer:
         elif s == 'False':
             return lambda _: False
         env_eval = mk_env(pvars)
-        env_eval.update({'And': And, 'Or': Or, 'Not': Not, 'Implies': Implies, 'ForAll': ForAll, 'True': True, 'False': False})
+        env_eval.update(
+            {'And': And, 'Or': Or, 'Not': Not, 'Implies': Implies, 'ForAll': ForAll, 'True': True, 'False': False})
         expr = eval(s, None, env_eval)
         return lambda env: expr
 
@@ -161,6 +158,7 @@ class Synthesizer:
         filled_program = ';'.join(filled_program_lines)
 
         return filled_program
+
 
 if __name__ == '__main__':
     # # example program
