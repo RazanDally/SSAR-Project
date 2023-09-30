@@ -3,15 +3,6 @@ import argparse
 
 def parse_cmd_args():
     parser = argparse.ArgumentParser()
-    # TODO: Add feature Flags for the following:
-    #  1. Synthesis with PBE: input/output examples. (syntax.py)
-    #  2. Synthesis with Assertions
-    #  3. Synthesis with both PBE and Assertions (extra Feature)
-    #  4. More Language Features: Define Data Structures, Define Functions, etc.
-    #  5. Alternative methods for behavior specification: (1) Input/Output Examples, (2) Input/Output Types, (3) Input/Output Assertions
-    #  6. Interactive mode: (1) User can provide input/output examples, (2) User can provide input/output types, (3) User can provide input/output assertions
-    #  7. More expressive Synthesis: break the berrier of holes being only constants, allow holes to be expressions, allow holes to be functions, etc.
-    #  8. More expressive Synthesis: allow holes to be of different types, allow holes to be of different kinds, etc.
     parser.add_argument('--I', required=False, action='store_true', help="Interactive mode")
     parser.add_argument('--A', required=False, action='store_true', help="Automatic mode")
     parser.add_argument('--PBE', required=False, action='store_true', help="Synthesis with PBE")
