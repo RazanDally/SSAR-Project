@@ -1,5 +1,6 @@
 import time
 import commandlines
+import re
 from src.while_lang.syntax import WhileParser
 from synthesizer import Synthesizer
 
@@ -10,6 +11,7 @@ def reset_flags(args):
     args.PBE_ASSERT = False
     return args
 
+
 def pbe_examples(program):
     print("Please Provide the number of Examples:")
     num_examples = input()
@@ -17,6 +19,9 @@ def pbe_examples(program):
     pvars = list(n for n in ast.terminals if isinstance(n, str) and n != 'skip' and n != '??')
     ordered_set = dict.fromkeys(pvars)
     pvars = list(ordered_set.keys())
+    if int(num_examples) == 0:
+        print(">> No examples provided. Synthesis will be performed without PBE.")
+        return [], [], pvars
     print("The format of the example should be:\n"
           f"input: {tuple(pvars)} \n"
           f"output: {tuple(pvars)} \n"
@@ -37,6 +42,11 @@ def pbe_examples(program):
 
     return inputs, outputs, pvars
 
+
+def has_assert(program):
+    return "assert" in program
+
+
 if __name__ == "__main__":
     args = commandlines.parse_cmd_args()
     print(">> Welcome to the Synthesis Engine.")
@@ -53,7 +63,6 @@ if __name__ == "__main__":
     while True:
         synth = Synthesizer()
         if mode_interactive:
-            # TODO: Interactive mode
             if not args.PBE and not args.ASSERT and not args.PBE_ASSERT:
                 print("Please Choose Synthesis Mode:")
                 print("1. Synthesis with PBE")
@@ -73,6 +82,10 @@ if __name__ == "__main__":
                 program = input()
                 invalid_program = True
                 while invalid_program:
+                    if has_assert(program):
+                        print(">> Invalid program, Please Provide a Valid Program Without Asserts:")
+                        program = input()
+                        continue
                     ast = WhileParser()(program)
                     if not ast:
                         print(">> Invalid program, Please Provide a Valid Program in While_lang:")
@@ -82,9 +95,7 @@ if __name__ == "__main__":
                 print("Please Provide a loop invariant:")
                 linv = input()
                 inputs, outputs, pvars = pbe_examples(program)
-                synth.synthesis_pbe( program, pvars, linv, inputs, outputs)
-
-
+                synth.synthesis_pbe(program, pvars, linv, inputs, outputs)
 
             elif args.ASSERT:
                 print("Please Provide a Program in While_lang that includes asserts :")
@@ -110,20 +121,24 @@ if __name__ == "__main__":
                 program = input()
                 invalid_program = True
                 while invalid_program:
+                    if not has_assert(program):
+                        print("Invalid Program, "
+                              "Please Provide a Program that includes asserts :")
+                        program = input()
+                        continue
                     ast = WhileParser()(program)
                     if not ast:
                         print(">> Invalid program, Please Provide a Valid Program in While_lang:")
                         program = input()
                     else:
                         invalid_program = False
-                print("Please Provide a pre-condition:")
-                pre = input()
-                print("Please Provide a post-condition:")
-                post = input()
                 print("Please Provide a loop invariant:")
                 linv = input()
                 inputs, outputs, pvars = pbe_examples(program)
-                synth.synthesis_pbe_assert(program, pre, post, linv, inputs, outputs)
+                if inputs == [] and outputs == []:
+                    synth.synthesis_assert(program, 'True', 'True', linv)
+
+                synth.synthesis_pbe(program, pvars, linv, inputs, outputs)
 
 
         elif mode_automatic:
@@ -132,12 +147,16 @@ if __name__ == "__main__":
             time.sleep(0.5)
         else:
             print("Invalid mode, Please run: python main.py --help")
+            break
+
         print("-" * 40)
         print(">> Would you like to continue? (y/n)")
         continue_flag = input()
-        if continue_flag == "n":
+        yes_pattern = re.compile(r"^[yY][eE][sS]$|^[yY]$")
+        no_pattern = re.compile(r"^[nN][oO]$|^[nN]$")
+        if no_pattern.match(continue_flag):
             break
-        elif continue_flag == "y":
+        elif yes_pattern.match(continue_flag):
             print(">> Continuing Synthesis Engine...")
             args = reset_flags(args)
             time.sleep(0.3)
